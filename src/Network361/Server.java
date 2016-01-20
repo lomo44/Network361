@@ -26,7 +26,6 @@ public abstract class Server{
 	protected Socket getRequestSocket() throws IOException {
 		return serverSocket.accept();
 	}
-	
 	protected void listento(int portnum) throws IOException{
 		serverSocket = new ServerSocket(portnum);
 	}

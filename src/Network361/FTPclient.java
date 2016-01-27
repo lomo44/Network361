@@ -1,4 +1,5 @@
 package Network361;
+import java.io.File;
 import java.io.IOException;
 import java.net.Socket;
 import java.net.UnknownHostException;
@@ -39,11 +40,16 @@ public class FTPclient extends Client {
 				String receivefilepath = getUserInput();
 				ftpDataConnection = new FTPDataConnection(dataconnection,receivefilepath, false);
 				Thread datareceive = new Thread(ftpDataConnection);
+				long start_time= System.currentTimeMillis();
 				datareceive.start();
 				datareceive.join();
+				long end_time =System.currentTimeMillis();
+				File newfile = new File(receivefilepath);
+				long filelength=newfile.length();
+				double speed = filelength/(end_time-start_time);
 				dataconnection.close();
 				String finalmessage = ftpControlConnection.readLineFromBufferedReader();
-				System.out.println(finalmessage);
+				System.out.println(finalmessage + "speed: "+ speed + "kb//s\n");
 				clientConnection.close();
 				return;
 			}

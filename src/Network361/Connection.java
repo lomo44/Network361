@@ -48,9 +48,9 @@ public abstract class Connection implements Runnable{
 	public String readLineFromBufferedReader() throws IOException{
 		return inputreader.readLine();
 	}
-        public int readIntegerFromBufferedReader() throws IOException{
-                return Integer.parseInt(inputreader.readLine());
-        }
+    public int readIntegerFromBufferedReader() throws IOException{
+        return Integer.parseInt(inputreader.readLine());
+    }
 	public void writeLineToDataOutputStream(String s) throws IOException{
 		outputwriter.writeBytes(s + "\r\n");
 	}

@@ -49,10 +49,13 @@ public abstract class Connection implements Runnable{
 		return inputreader.readLine();
 	}
     public int readIntegerFromBufferedReader() throws IOException{
-        return Integer.parseInt(inputreader.readLine());
+        return inputreader.read();
     }
 	public void writeLineToDataOutputStream(String s) throws IOException{
 		outputwriter.writeBytes(s + "\r\n");
+	}
+	public void writeIntToDataOutputStream(int i) throws IOException{
+		outputwriter.write(i);
 	}
 	protected DataOutputStream getOutputwriter() {
 		return this.outputwriter;

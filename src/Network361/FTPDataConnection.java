@@ -8,6 +8,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.Socket;
 
+// TODO: Unify this connection's constructor
+
 
 public class FTPDataConnection extends Connection {
 

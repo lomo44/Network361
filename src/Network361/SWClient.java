@@ -32,10 +32,5 @@ public class SWClient extends SimpleClient {
 			e.printStackTrace();
 		}
 	}
-	public void WriteIntToOutput(int i) throws IOException{
-		super.getDataOutputWriter().write(i);
-	}
-	public int ReadIntFromInput()throws IOException{
-		return super.getDataInputReader().read();
-	}
+	
 }

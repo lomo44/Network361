@@ -3,6 +3,7 @@ package Network361;
 import java.io.IOException;
 import java.net.UnknownHostException;
 import java.util.Scanner;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class GBNClient extends SimpleClient {
 	private Scanner intscanner;
@@ -10,7 +11,7 @@ public class GBNClient extends SimpleClient {
 	private int proberror;
 	private int windowSize;
 	private int timeout;
-	private int lastACK;
+	private AtomicInteger lastACK;
 	private long timeoutarray[];
 	
 	public GBNClient(String hostname, int portnum){
@@ -21,6 +22,7 @@ public class GBNClient extends SimpleClient {
 			e.printStackTrace();
 		}
 		intscanner = new Scanner(System.in);
+		lastACK = new AtomicInteger(0);
 	}
 	
 	public void run() {
@@ -29,7 +31,12 @@ public class GBNClient extends SimpleClient {
 			for(;;){
 				InitializeACKListener();
 				WriteInitialInformationToServer();
-				SendingPacketToServer();
+				try {
+					SendingPacketToServer();
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			}
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
@@ -53,38 +60,29 @@ public class GBNClient extends SimpleClient {
 		WriteIntToOutput(nofPackets);
 		WriteIntToOutput(proberror);
 	}
-	private void SendingPacketToServer() throws IOException{
+	private void SendingPacketToServer() throws IOException, InterruptedException{
 		int sent = 0;
-		for(;;){
-			if(lastACK == nofPackets){
-				break;
-			}
-			for(int i = 1 ;i <= windowSize;i++){
-				sent++;
-				if(sent > nofPackets)
-					break;
-				System.out.println("Sending Package " + sent);
-				WriteIntToOutput(sent);
-				timeoutarray[(sent-1)%windowSize] = System.currentTimeMillis();
-			}
-			//System.out.println("wow");
-			for(;;){
-				//System.out.println(sent + "-" + lastACK);
-				if((sent - lastACK) <= windowSize && sent < nofPackets){
-					System.out.println("wow");
+		for(int i = 1 ;i <= windowSize;i++){
+			sent++;
+			System.out.println("Sending Package " + sent);
+			WriteIntToOutput(sent);
+			timeoutarray[(sent-1)%windowSize] = System.currentTimeMillis();
+		}
+		
+		for(;lastACK.get() < nofPackets;){
+			synchronized (lastACK) {
+				lastACK.wait();
+				if((sent - lastACK.get()) <= windowSize && sent < nofPackets){
 					sent++;
 					System.out.println("Sending Package " + sent);
 					WriteIntToOutput(sent);
 					timeoutarray[(sent-1)%windowSize] = System.currentTimeMillis();
 				}
 				long currenttime = System.currentTimeMillis();
-				if(currenttime - timeoutarray[lastACK%windowSize] >= timeout){
+				if(currenttime - timeoutarray[lastACK.get()%windowSize] >= timeout){
 					System.out.println("Time out");
-					sent = lastACK;
-					break;
+					sent = lastACK.get();
 				}
-				if(lastACK == nofPackets)
-					break;
 			}
 		}
 	}
@@ -94,10 +92,13 @@ public class GBNClient extends SimpleClient {
 
 	}
 	public int getLastACK() {
-		return lastACK;
+		return lastACK.get();
 	}
 	public void setLastACK(int lastACK) {
-		this.lastACK = lastACK;
+		synchronized (this.lastACK) {
+			this.lastACK.set(lastACK);
+			this.lastACK.notify();
+		}
 	}
 
 }

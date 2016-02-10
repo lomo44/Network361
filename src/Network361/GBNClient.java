@@ -11,7 +11,7 @@ public class GBNClient extends SimpleClient {
 	private int proberror;
 	private int windowSize;
 	private int timeout;
-	private AtomicInteger lastACK;
+	private volatile int lastACK;
 	private long timeoutarray[];
 	
 	public GBNClient(String hostname, int portnum){
@@ -22,9 +22,8 @@ public class GBNClient extends SimpleClient {
 			e.printStackTrace();
 		}
 		intscanner = new Scanner(System.in);
-		lastACK = new AtomicInteger(0);
 	}
-	
+	@Override
 	public void run() {
 		// TODO Auto-generated method stub
 		try {
@@ -53,7 +52,6 @@ public class GBNClient extends SimpleClient {
 		System.out.println("Please enter the timeout value: ");
 		timeout = intscanner.nextInt();
 		System.out.println("Sending the information to the server.\n");
-		
 		WriteIntToOutput(nofPackets);
 		WriteIntToOutput(proberror);
 	}
@@ -67,20 +65,17 @@ public class GBNClient extends SimpleClient {
 			timeoutarray[(sent-1)%windowSize] = System.currentTimeMillis();
 		}
 		
-		for(;lastACK.get() < nofPackets;){
-			synchronized (lastACK) {
-				lastACK.wait();
-				if((sent - lastACK.get()) <= windowSize && sent < nofPackets){
-					sent++;
-					System.out.println("Sending Package " + sent);
-					WriteIntToOutput(sent);
-					timeoutarray[(sent-1)%windowSize] = System.currentTimeMillis();
-				}
-				long currenttime = System.currentTimeMillis();
-				if(currenttime - timeoutarray[lastACK.get()%windowSize] >= timeout){
-					System.out.println("Time out");
-					sent = lastACK.get();
-				}
+		for(;lastACK < nofPackets;){
+			if((sent - lastACK) <= windowSize && sent < nofPackets){
+				sent++;
+				System.out.println("Sending Package " + sent);
+				WriteIntToOutput(sent);
+				timeoutarray[(sent-1)%windowSize] = System.currentTimeMillis();
+			}
+			long currenttime = System.currentTimeMillis();
+			if(currenttime - timeoutarray[lastACK%windowSize] >= timeout){
+				System.out.println("Time out");
+				sent = lastACK;
 			}
 		}
 		long end_time = System.currentTimeMillis();
@@ -93,12 +88,12 @@ public class GBNClient extends SimpleClient {
 
 	}
 	public int getLastACK() {
-		return lastACK.get();
+		return lastACK;
 	}
 	public void setLastACK(int lastACK) {
-		synchronized (this.lastACK) {
-			this.lastACK.set(lastACK);
-			this.lastACK.notify();
-		}
+		this.lastACK = lastACK;
+	}
+	public int getNofPacket(){
+		return nofPackets;
 	}
 }

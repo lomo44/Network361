@@ -25,13 +25,19 @@ public class ACKListener implements Runnable {
 	@Override
 	public void run() {
 		// TODO Auto-generated method stub
-		System.out.println("Acknoledgement Listener Established.");
+		System.out.println("Acknowledgement Listener Established.");
 		for(;;){
 			try {
+				if(clientSocket.isClosed()){
+					break;
+				}
 				int lastack = reader.read();
 				if(lastack > master.getLastACK()){
 					System.out.println("Acknoledgement " +lastack +" received");
 					master.setLastACK(lastack);
+					if(lastack == master.getNofPacket()){
+						break;
+					}
 				}
 			} catch (IOException e) {
 				// TODO Auto-generated catch block

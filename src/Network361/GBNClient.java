@@ -28,15 +28,13 @@ public class GBNClient extends SimpleClient {
 	public void run() {
 		// TODO Auto-generated method stub
 		try {
-			for(;;){
-				InitializeACKListener();
-				WriteInitialInformationToServer();
-				try {
-					SendingPacketToServer();
-				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
+			InitializeACKListener();
+			WriteInitialInformationToServer();
+			try {
+				SendingPacketToServer();
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			}
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
@@ -54,13 +52,13 @@ public class GBNClient extends SimpleClient {
 		timeoutarray = new long[windowSize];
 		System.out.println("Please enter the timeout value: ");
 		timeout = intscanner.nextInt();
-		
 		System.out.println("Sending the information to the server.\n");
 		
 		WriteIntToOutput(nofPackets);
 		WriteIntToOutput(proberror);
 	}
 	private void SendingPacketToServer() throws IOException, InterruptedException{
+		long start_time = System.currentTimeMillis();
 		int sent = 0;
 		for(int i = 1 ;i <= windowSize;i++){
 			sent++;
@@ -85,6 +83,9 @@ public class GBNClient extends SimpleClient {
 				}
 			}
 		}
+		long end_time = System.currentTimeMillis();
+		double duration = (end_time - start_time)/1000;
+		System.out.println("All Package Sent. Time Used: " + duration + " Seconds");
 	}
 	private void InitializeACKListener(){
 		Thread newthread = new Thread(new ACKListener(getSocket(), this));
@@ -100,5 +101,4 @@ public class GBNClient extends SimpleClient {
 			this.lastACK.notify();
 		}
 	}
-
 }

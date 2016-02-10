@@ -64,7 +64,7 @@ public class GBNClient extends SimpleClient {
 		}
 		
 		for(;lastACK < nofPackets;){
-			if((sent - lastACK) <= windowSize && sent < nofPackets){
+			if((sent - lastACK) < windowSize && sent < nofPackets){
 				sent++;
 				System.out.println("Sending Package " + sent);
 				WriteIntToOutput(sent);

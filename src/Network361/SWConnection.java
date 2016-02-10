@@ -27,7 +27,7 @@ public class SWConnection extends Connection {
 	@Override
 	protected void doRequest() throws IOException {
 		// TODO Auto-generated method stub
-		int noPack = readIntegerFromBufferedReader();
+		noPack = readIntegerFromBufferedReader();
 		System.out.println("Server side expect " + noPack + " packets. \n");
 		for(int i = 1; i <= noPack;){
 			int pack = readIntegerFromBufferedReader();

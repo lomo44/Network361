@@ -1,9 +1,7 @@
 package Network361;
 
 import java.io.IOException;
-import java.net.UnknownHostException;
 import java.util.Scanner;
-import java.util.concurrent.atomic.AtomicInteger;
 
 public class GBNClient extends SimpleClient {
 	private Scanner intscanner;

@@ -2,8 +2,6 @@ package Network361;
 import java.io.File;
 import java.io.IOException;
 import java.net.Socket;
-import java.net.UnknownHostException;
-
 
 
 public class FTPclient extends Client {

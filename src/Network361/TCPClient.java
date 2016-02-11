@@ -43,7 +43,7 @@ public class TCPClient extends ARQClient {
 		}
 		double transmition_end_time = (System.currentTimeMillis() - transmition_start_time)/1000;
 		System.out.println("Data Transimit Finished, Time: "+transmition_end_time + " S");
-		System.out.println("Total Round Trip Time: " + RoundTripTimes)''
+		System.out.println("Total Round Trip Time: " + RoundTripTimes);
 		closeSocket();
 		// TODO Auto-generated method stub
 	}

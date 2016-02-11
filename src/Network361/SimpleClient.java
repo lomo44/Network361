@@ -36,5 +36,13 @@ public abstract class SimpleClient extends Client {
 	protected Socket getSocket(){
 		return clientsocket;
 	}
+	protected void closeSocket(){
+		try {
+			clientsocket.close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
 
 }

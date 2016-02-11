@@ -3,18 +3,18 @@ package Network361;
 import java.io.IOException;
 import java.util.Scanner;
 
-public class GBNClient extends SimpleClient {
+public class GBNClient extends ARQClient {
 	private Scanner intscanner;
-	private int nofPackets;
 	private int proberror;
 	private int windowSize;
 	private int timeout;
-	private volatile int lastACK;
 	private long timeoutarray[];
 	
 	public GBNClient(String hostname, int portnum){
+		super();
 		try {
 			this.Connect(hostname, portnum);
+			InitializeACKListener();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -25,7 +25,6 @@ public class GBNClient extends SimpleClient {
 	public void run() {
 		// TODO Auto-generated method stub
 		try {
-			InitializeACKListener();
 			WriteInitialInformationToServer();
 			try {
 				SendingPacketToServer();
@@ -79,19 +78,5 @@ public class GBNClient extends SimpleClient {
 		long end_time = System.currentTimeMillis();
 		double duration = (end_time - start_time)/1000;
 		System.out.println("All Package Sent. Time Used: " + duration + " Seconds");
-	}
-	private void InitializeACKListener(){
-		Thread newthread = new Thread(new ACKListener(getSocket(), this));
-		newthread.start();
-
-	}
-	public int getLastACK() {
-		return lastACK;
-	}
-	public void setLastACK(int lastACK) {
-		this.lastACK = lastACK;
-	}
-	public int getNofPacket(){
-		return nofPackets;
 	}
 }

@@ -8,10 +8,10 @@ import java.net.Socket;
 public class ACKListener implements Runnable {
 
 	private Socket clientSocket;
-	private GBNClient master;
+	private ARQClient master;
 	private BufferedReader reader;
 	
-	public ACKListener(Socket _soc,GBNClient _master) {
+	public ACKListener(Socket _soc,ARQClient _master) {
 		clientSocket = _soc;
 		master = _master;
 		try {
@@ -35,7 +35,7 @@ public class ACKListener implements Runnable {
 				if(lastack > master.getLastACK()){
 					System.out.println("Acknoledgement " +lastack +" received");
 					master.setLastACK(lastack);
-					if(lastack == master.getNofPacket()){
+					if(lastack == master.getNumberOfPacket()){
 						break;
 					}
 				}

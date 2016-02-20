@@ -14,11 +14,11 @@ public abstract class Client implements Runnable {
 		userinput = new BufferedReader(new InputStreamReader(System.in));
 	}
 	
-	public Socket ConnectToHost(String hostname, int portnumber) throws UnknownHostException, IOException{
+	protected Socket ConnectToHost(String hostname, int portnumber) throws UnknownHostException, IOException{
 		return new Socket(hostname,portnumber);
 	}
 	
-	public String getUserInput() throws IOException{
+	protected String getUserInput() throws IOException{
 		return userinput.readLine();
 	}
 }

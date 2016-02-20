@@ -2,20 +2,28 @@ package Network361;
 import java.net.*;
 import java.io.*;
 //
-public abstract class Server{
+public class Server{
 	
 	private ServerSocket serverSocket;
 	private String serverName;
+	private ConnectionThreadFactory connectionfactory;
 	
 	public Server(String _servername) throws UnknownHostException {
 		try {
 			this.setServerName(_servername);
 			System.out.println(_servername + " server created \n");	
+			connectionfactory = new ConnectionThreadFactory();
 		} catch (Exception e) {
 			// TODO: handle exception
 		}		
 	}
-	abstract void ServerRun() throws IOException;
+	void ServerRun() throws IOException{
+		ConnectionType newtype = ConnectionType.Stop_And_Wait;
+		listento(8888);
+		for(;;){
+			connectionfactory.getConnectionThread(newtype, getRequestSocket()).start();
+		}
+	}
 	public void ServerStop() throws UnknownHostException{
 		try {
 			this.serverSocket.close();

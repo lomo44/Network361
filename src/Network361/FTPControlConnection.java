@@ -17,7 +17,7 @@ public class FTPControlConnection extends Connection {
 		this.writeLineToDataOutputStream("FTP Control Connection Established, please enter file path");
 		String filename = this.readLineFromBufferedReader();
 		File newfile = new File(filename);
-		if(newfile.exists()&&!newfile.isDirectory()){
+		if(isFileValid(newfile)){
 			int portnum = this.getConnectionSocket().getPort()+1;
 			this.writeLineToDataOutputStream("File Exist, Sending Data Connection Port Number: " + portnum);
 			this.writeLineToDataOutputStream(Integer.toString(portnum));
@@ -38,7 +38,9 @@ public class FTPControlConnection extends Connection {
 			this.writeLineToDataOutputStream("File does not Exist");
 		}
 	}
-	
+	protected boolean isFileValid(File newfile){
+            return newfile.exists()&&!newfile.isDirectory();
+        }
 	@Override
 	public void run() {
 		try {

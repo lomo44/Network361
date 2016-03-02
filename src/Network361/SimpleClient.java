@@ -33,6 +33,9 @@ public abstract class SimpleClient extends Client {
 	protected int ReadIntFromInput()throws IOException{
 		return getDataInputReader().read();
 	}
+	protected String ReadLineFromInputReader() throws IOException{
+		return datainputreader.readLine();
+	}
 	protected Socket getSocket(){
 		return clientsocket;
 	}

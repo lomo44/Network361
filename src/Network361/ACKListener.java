@@ -9,11 +9,14 @@ public class ACKListener implements Runnable {
 
 	private Socket clientSocket;
 	private ARQClient master;
+	private Thread masterThread;
 	private BufferedReader reader;
+	private volatile int notifyACK = -1;
 	
-	public ACKListener(Socket _soc,ARQClient _master) {
+	public ACKListener(Socket _soc,ARQClient _master, Thread _masterThread) {
 		clientSocket = _soc;
 		master = _master;
+		masterThread = _masterThread;
 		try {
 			reader = new BufferedReader(new InputStreamReader(_soc.getInputStream()));
 		} catch (IOException e) {
@@ -35,6 +38,10 @@ public class ACKListener implements Runnable {
 				if(lastack > master.getLastACK()){
 					System.out.println("Acknoledgement " +lastack +" received");
 					master.setLastACK(lastack);
+					if(lastack == notifyACK){
+						notifyACK = -1;
+						masterThread.interrupt();
+					}
 					if(lastack == master.getNumberOfPacket()){
 						break;
 					}
@@ -45,6 +52,10 @@ public class ACKListener implements Runnable {
 			}
 		}
 		
+	}
+	public void SetNotifyACK(int ack){
+		System.out.println("Set notification: "+ack);
+		notifyACK = ack;
 	}
 
 }

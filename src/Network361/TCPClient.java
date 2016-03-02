@@ -12,6 +12,13 @@ public class TCPClient extends ARQClient {
 	private int Packetsent;
 	private long TimeOutInterval = 1200;
 	private int RoundTripTimes;
+	private long StartRTT = 0;
+	private long AccumulatedRTT = 0;
+	private long AvgRTT = 0;
+	private long DevRTT = 0;
+	private long EstimateRTT = 1200;
+	private final double ALPHA = 0.125;
+	private final double BETA = 0.25;
 	private Scanner userinputscanner;
 	
 	public TCPClient(String hostname,int portnumber) {
@@ -67,6 +74,7 @@ public class TCPClient extends ARQClient {
 	}
 	private void Transmitting(){
 		System.out.println("Congestion window size: " + congestionwindow);
+		StartRTT= System.currentTimeMillis();
 		for(int i = 1; i<= congestionwindow && Packetsent < nofPackets ;i++){
 			Packetsent++;
 			System.out.println("Sending Packet " + Packetsent);
@@ -91,12 +99,22 @@ public class TCPClient extends ARQClient {
 	
 	private void AdjusitngCongestionWindow(){
 		try {
+			setNotifyACK(Packetsent);
 			Thread.sleep(TimeOutInterval);
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			AdjustingTimeoutValue();
+			if((congestionwindow << 1) > ssthresh){
+				congestionwindow++;
+			}
+			else {
+				congestionwindow = congestionwindow << 1;
+			}
+			return;
 		}
+		System.out.println("Time out");
 		if(lastACK == Packetsent){
+			AdjusitngCongestionWindow();
 			if((congestionwindow << 1) > ssthresh){
 				congestionwindow++;
 			}
@@ -105,9 +123,22 @@ public class TCPClient extends ARQClient {
 			}
 		}
 		else{
+			EstimateRTT = TimeOutInterval;
 			ssthresh = congestionwindow >> 1;
 			congestionwindow = 1;
 			Packetsent = lastACK;
 		}
+	}
+	private void AdjustingTimeoutValue(){
+		long currentRTT = System.currentTimeMillis()-StartRTT;
+		AccumulatedRTT += currentRTT;
+		AvgRTT = AccumulatedRTT / Packetsent;
+		DevRTT = (int)((1-BETA)*DevRTT + BETA*Math.abs(AvgRTT-currentRTT));
+		EstimateRTT = (int)((1-ALPHA)*EstimateRTT+ALPHA*AvgRTT);
+		TimeOutInterval = EstimateRTT + 4*DevRTT;
+		System.out.println("Estimated RTT"+EstimateRTT);
+		System.out.println("Dev RTT"+DevRTT);
+		System.out.println("New Timeout Value: "+TimeOutInterval);
+		System.out.println("AvgRTT: "+ AvgRTT);
 	}
 }

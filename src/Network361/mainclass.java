@@ -3,7 +3,7 @@ import java.io.*;
 public class mainclass {
         // second commit from netbeans
 	public static void main(String[] args) throws IOException{
-		Thread GBNclientThread = new Thread(new TCPClient("localhost",9876));
+		Thread GBNclientThread = new Thread(new RoutingClient("localhost",9876));
 		GBNclientThread.start();
 	}
 }

@@ -21,6 +21,16 @@ public abstract class SimpleClient extends Client {
 		datainputreader = new BufferedReader(new InputStreamReader(clientsocket.getInputStream()));
 		dataoutputwriter = new DataOutputStream(clientsocket.getOutputStream());
 	}
+	public void Connect(Socket _soc){
+		try {
+			datainputreader = new BufferedReader(new InputStreamReader(_soc.getInputStream()));
+			dataoutputwriter = new DataOutputStream(clientsocket.getOutputStream());
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			System.out.println("Socket Not Reachable");
+			e.printStackTrace();
+		}	
+	}
 	protected BufferedReader getDataInputReader() {
 		return datainputreader;
 	}
@@ -29,6 +39,9 @@ public abstract class SimpleClient extends Client {
 	}
 	protected void WriteIntToOutput(int i) throws IOException{
 		getDataOutputWriter().write(i);
+	}
+	protected void SendPacketToOutPut(Packet _Packet){
+		_Packet.SendViaDataStream(dataoutputwriter);
 	}
 	protected int ReadIntFromInput()throws IOException{
 		return getDataInputReader().read();

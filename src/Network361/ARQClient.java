@@ -19,10 +19,10 @@ public abstract class ARQClient extends SimpleClient {
 		Thread newthread = new Thread(_AckListener);
 		newthread.start();
 	}
-	public int getNumberOfPacket(){
+	public int getTotalACK(){
 		return nofPackets;
 	}
-	public void setNumberOfPacket(int num){
+	public void setTotalACK(int num){
 		nofPackets = num;
 	}
 	public void setNotifyACK(int ack){

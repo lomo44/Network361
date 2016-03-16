@@ -11,6 +11,7 @@ import java.util.StringTokenizer;
 import javax.lang.model.element.Element;
 
 import Graph.Graph;
+import Graph.Path;
 
 public class RoutingClient extends SimpleClient {
 
@@ -98,6 +99,16 @@ public class RoutingClient extends SimpleClient {
 		}
 		System.out.print("]\n");	
 	}
+	private Path GetShortestPath(int from, int to){
+		Path newpath = new Path();
+		routeGraph.FindShortesDistance(from);
+		newpath.m_PacketList = routeGraph.GetShortesPathTo(to);
+		newpath.totalweight = routeGraph.nodelist.get(to).minDistance;
+		newpath.from = from;
+		newpath.to = to;
+		return newpath;
+	}
+		
 	private void PrintAllPath(){
 		for(int i = 0; i < NofNode; i++){
 			routeGraph.FindShortesDistance(i);

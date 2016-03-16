@@ -10,15 +10,17 @@ public class TCPClient extends ARQClient {
 	private int congestionwindow;
 	private int ssthresh;
 	private int Packetsent;
-	private long TimeOutInterval = 1200;
 	private int RoundTripTimes;
+	private long TimeOutInterval = 1200;
 	private long StartRTT = 0;
 	private long AccumulatedRTT = 0;
 	private long AvgRTT = 0;
 	private long DevRTT = 0;
 	private long EstimateRTT = 1200;
+	private int MaximumSegmentSize = 1;
 	private final double ALPHA = 0.125;
 	private final double BETA = 0.25;
+	private int NumOfACKReceive = 0;			// Number of Ack received in 1 RTT
 	private Scanner userinputscanner;
 	
 	public TCPClient(String hostname,int portnumber) {
@@ -46,8 +48,9 @@ public class TCPClient extends ARQClient {
 		InitializeACKListener();
 		long transmition_start_time = System.currentTimeMillis(); 
 		while(!isTransmittingFinished()){
+			NumOfACKReceive = getLastACK();
 			Transmitting();
-			AdjusitngCongestionWindow();
+			AdjustingTCPConfiguration();
 		}
 		double transmition_end_time = (System.currentTimeMillis() - transmition_start_time)/1000;
 		System.out.println("Data Transimit Finished, Time: "+transmition_end_time + " S");
@@ -97,38 +100,44 @@ public class TCPClient extends ARQClient {
 		return lastACK == nofPackets;
 	}
 	
-	private void AdjusitngCongestionWindow(){
+	private void AdjustingTCPConfiguration(){
 		try {
 			setNotifyACK(Packetsent);
 			Thread.sleep(TimeOutInterval);
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
+			NumOfACKReceive -= getLastACK();
 			AdjustingTimeoutValue();
-			if((congestionwindow << 1) > ssthresh){
-				congestionwindow++;
-			}
-			else {
-				congestionwindow = congestionwindow << 1;
-			}
+			AdjustingCongestionWindow();
 			return;
 		}
 		System.out.println("Time out");
 		if(lastACK == Packetsent){
-			AdjusitngCongestionWindow();
-			if((congestionwindow << 1) > ssthresh){
-				congestionwindow++;
-			}
-			else {
-				congestionwindow = congestionwindow << 1;
-			}
+			NumOfACKReceive -= getLastACK();s
+			AdjustingTCPConfiguration();
+			AdjustingCongestionWindow();
 		}
 		else{
-			EstimateRTT = TimeOutInterval;
-			ssthresh = congestionwindow >> 1;
-			congestionwindow = 1;
-			Packetsent = lastACK;
+			SchedulePacketRetransmit();
 		}
 	}
+	
+	private void AdjustingCongestionWindow(){
+		if((congestionwindow << 1) > ssthresh){
+			congestionwindow++;
+		}
+		else {
+			congestionwindow = congestionwindow << 1;
+		}
+	}
+	
+	private void SchedulePacketRetransmit(){
+		EstimateRTT = TimeOutInterval;
+		ssthresh = congestionwindow >> 1;
+		congestionwindow = MaximumSegmentSize;
+		Packetsent = lastACK;
+	}
+	
 	private void AdjustingTimeoutValue(){
 		long currentRTT = System.currentTimeMillis()-StartRTT;
 		AccumulatedRTT += currentRTT;

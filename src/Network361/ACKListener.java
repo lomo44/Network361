@@ -42,7 +42,7 @@ public class ACKListener implements Runnable {
 						notifyACK = -1;
 						masterThread.interrupt();
 					}
-					if(lastack == master.getNumberOfPacket()){
+					if(lastack == master.getTotalACK()){
 						break;
 					}
 				}

@@ -17,9 +17,9 @@ public class SWClient extends SimpleClient {
 		sent = 1;
 		try {
 			System.out.println("Sending number of packet to server");
-			WriteIntToOutput(noPackets);
+			sendIntToOutput(noPackets);
 			for(int i = sent; i <= noPackets;){
-				WriteIntToOutput(sent);
+				sendIntToOutput(sent);
 				int ack = ReadIntFromInput();
 				if(ack == sent){
 					System.out.println("Package " + sent + " received by the server.\n");

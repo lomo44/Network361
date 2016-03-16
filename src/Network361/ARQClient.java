@@ -2,7 +2,8 @@ package Network361;
 
 public abstract class ARQClient extends SimpleClient {
 	protected volatile int lastACK;
-	protected int nofPackets;
+	protected volatile int numOfAckReceived;
+	protected int totalNumberOfPacket;
 	protected ACKListener _AckListener;
 	public ARQClient() {
 		
@@ -10,6 +11,12 @@ public abstract class ARQClient extends SimpleClient {
 	}
 	public int getLastACK() {
 		return lastACK;
+	}
+	public int getNumOfAckReceived(){
+		return numOfAckReceived;
+	}
+	public void setNumOfAckReceived(int _num){
+		numOfAckReceived = _num;
 	}
 	public void setLastACK(int lastACK) {
 		this.lastACK = lastACK;
@@ -20,10 +27,10 @@ public abstract class ARQClient extends SimpleClient {
 		newthread.start();
 	}
 	public int getTotalACK(){
-		return nofPackets;
+		return totalNumberOfPacket;
 	}
 	public void setTotalACK(int num){
-		nofPackets = num;
+		totalNumberOfPacket = num;
 	}
 	public void setNotifyACK(int ack){
 		_AckListener.SetNotifyACK(ack);

@@ -37,8 +37,11 @@ public abstract class SimpleClient extends Client {
 	protected DataOutputStream getDataOutputWriter() {
 		return dataoutputwriter;
 	}
-	protected void WriteIntToOutput(int i) throws IOException{
+	protected void sendIntToOutput(int i) throws IOException{
 		getDataOutputWriter().write(i);
+	}
+	protected void sendLineToOutput(String s) throws IOException{
+		dataoutputwriter.writeBytes(s + "\r\n");
 	}
 	protected void SendPacketToOutPut(Packet _Packet){
 		_Packet.SendViaDataStream(dataoutputwriter);

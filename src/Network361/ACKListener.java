@@ -34,10 +34,12 @@ public class ACKListener implements Runnable {
 				if(clientSocket.isClosed()){
 					break;
 				}
-				int lastack = reader.read();
+				//int lastack = reader.read();
+				int lastack = Integer.parseInt(reader.readLine());
 				if(lastack > master.getLastACK()){
 					System.out.println("Acknoledgement " +lastack +" received");
 					master.setLastACK(lastack);
+					master.setNumOfAckReceived(master.getNumOfAckReceived()+1);
 					if(lastack == notifyACK){
 						notifyACK = -1;
 						masterThread.interrupt();
@@ -53,6 +55,7 @@ public class ACKListener implements Runnable {
 		}
 		
 	}
+
 	public void SetNotifyACK(int ack){
 		System.out.println("Set notification: "+ack);
 		notifyACK = ack;

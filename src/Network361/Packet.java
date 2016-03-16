@@ -7,7 +7,9 @@ import java.nio.ByteBuffer;
 public class Packet {
 	private int m_iSequenceNumber;
 	private int m_iPacketLength;
+	private int m_iPayloadLenth;
 	private byte[] m_cPayload;
+	
 	public Packet(int _SequnceNumber) {
 		m_iSequenceNumber = _SequnceNumber ;
 	}
@@ -17,6 +19,7 @@ public class Packet {
 		System.arraycopy(_int, 0, m_cPayload, 0, _int.length);
 		System.arraycopy(_payload, 0, m_cPayload, _int.length, _payloadlength);
 		m_iPacketLength = _payloadlength + _int.length;
+		m_iPayloadLenth = _payloadlength;
 	}
 	public byte[] UnloadPacket(){
 		return m_cPayload;
@@ -29,6 +32,12 @@ public class Packet {
 			System.out.println("Packet Send Fail");
 			e.printStackTrace();
 		}
+	}
+	public int getPacketSize(){
+		return m_iPacketLength;
+	}
+	public int getPayloadLength(){
+		return m_iPayloadLenth;
 	}
 	private byte[] int_to_4Byte(int i){
 		return ByteBuffer.allocate(4).putInt(i).array();

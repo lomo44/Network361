@@ -40,7 +40,7 @@ public class GBNClient extends ARQClient {
 	
 	private void WriteInitialInformationToServer() throws IOException{
 		System.out.println("Please enter number of packet: ");
-		nofPackets = intscanner.nextInt();
+		totalNumberOfPacket = intscanner.nextInt();
 		System.out.println("Please enter probability of error: ");
 		proberror = intscanner.nextInt();
 		System.out.println("Please enter the window size: ");
@@ -49,8 +49,8 @@ public class GBNClient extends ARQClient {
 		System.out.println("Please enter the timeout value: ");
 		timeout = intscanner.nextInt();
 		System.out.println("Sending the information to the server.\n");
-		WriteIntToOutput(nofPackets);
-		WriteIntToOutput(proberror);
+		sendIntToOutput(totalNumberOfPacket);
+		sendIntToOutput(proberror);
 	}
 	private void SendingPacketToServer() throws IOException, InterruptedException{
 		long start_time = System.currentTimeMillis();
@@ -58,15 +58,15 @@ public class GBNClient extends ARQClient {
 		for(int i = 1 ;i <= windowSize;i++){
 			sent++;
 			System.out.println("Sending Package " + sent);
-			WriteIntToOutput(sent);
+			sendIntToOutput(sent);
 			timeoutarray[(sent-1)%windowSize] = System.currentTimeMillis();
 		}
 		
-		for(;lastACK < nofPackets;){
-			if((sent - lastACK) < windowSize && sent < nofPackets){
+		for(;lastACK < totalNumberOfPacket;){
+			if((sent - lastACK) < windowSize && sent < totalNumberOfPacket){
 				sent++;
 				System.out.println("Sending Package " + sent);
-				WriteIntToOutput(sent);
+				sendIntToOutput(sent);
 				timeoutarray[(sent-1)%windowSize] = System.currentTimeMillis();
 			}
 			long currenttime = System.currentTimeMillis();

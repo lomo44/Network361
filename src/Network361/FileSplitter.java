@@ -13,6 +13,7 @@ public class FileSplitter {
 	private ArrayList<Packet> packetshelf;
 	private int numberofpacket;
 	private int segmentsize;
+	private int filesize;
 	private FileInputStream fileInputStream;
 	private File file;
 	
@@ -22,6 +23,9 @@ public class FileSplitter {
 		if(ValidateFile()){
 			SplitingFile();
 		}
+	}
+	public int getFileLength(){
+		return filesize;
 	}
 	private boolean ValidateFile(){
 		if(file.isDirectory()||!file.exists()){
@@ -39,10 +43,11 @@ public class FileSplitter {
 			try {
 				int byteread = fileInputStream.read(buffer);
 				if(byteread > 0){
-					_SequnceNumber += (byteread + 1);
+					_SequnceNumber += byteread;
 					Packet newpacket = new Packet(_SequnceNumber);
 					newpacket.LoadPsacket(buffer, byteread);
 					numberofpacket++;
+					filesize += byteread;
 					packetshelf.add(newpacket);
 				}
 				else{
@@ -62,7 +67,7 @@ public class FileSplitter {
 			e.printStackTrace();
 		}
 	}
-	private ArrayList<Packet> CheckOutPackets(){
+	public ArrayList<Packet> CheckOutPackets(){
 		return packetshelf;
 	}
 }

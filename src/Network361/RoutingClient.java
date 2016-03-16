@@ -3,6 +3,7 @@ package Network361;
 import java.awt.List;
 import java.awt.print.Printable;
 import java.io.IOException;
+import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Scanner;
@@ -32,34 +33,40 @@ public class RoutingClient extends SimpleClient {
 		userScanner = new Scanner(System.in);
 		// TODO Auto-generated constructor stub
 	}
+	public RoutingClient(Socket _soc){
+		Connect(_soc);
+	}
 	
 	@Override
 	public void run() {
 		// TODO Auto-generated method stub
-		AskForUserInput();
-		SendInitialInformation();
-		ReceiveInfoAndCreateGraph();
-		//routeGraph.print();
-		PrintMatrix();
-		PrintAllPath();
-		
+		for(;;){
+			AskForUserInput();
+			SendInitialInformation();
+			ReceiveInfoAndCreateGraph();
+			//routeGraph.print();
+			PrintMatrix();
+			PrintAllPath();
+		}	
 	}
-	
+	public void InitializeRoutingGraph(int nofnode){
+		NofNode = nofnode;
+		routeGraph = new Graph(nofnode);
+	}
 	private void AskForUserInput(){
 		System.out.println("Please Enter Number of Node");
-		NofNode = userScanner.nextInt();
-		routeGraph = new Graph(NofNode);
+		InitializeRoutingGraph(userScanner.nextInt());
 	}
 	
 	private void SendInitialInformation(){
 		try {
-			this.WriteIntToOutput(NofNode);
+			this.sendIntToOutput(NofNode);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
-	private void ReceiveInfoAndCreateGraph(){
+	public void ReceiveInfoAndCreateGraph(){
 		try {
 			String serverinfo = this.ReadLineFromInputReader();
 			StringTokenizer converter = new StringTokenizer(serverinfo);
@@ -99,7 +106,7 @@ public class RoutingClient extends SimpleClient {
 		}
 		System.out.print("]\n");	
 	}
-	private Path GetShortestPath(int from, int to){
+	public Path GetShortestPath(int from, int to){
 		Path newpath = new Path();
 		routeGraph.FindShortesDistance(from);
 		newpath.m_PacketList = routeGraph.GetShortesPathTo(to);

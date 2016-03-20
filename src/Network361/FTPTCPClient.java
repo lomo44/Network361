@@ -23,7 +23,7 @@ public class FTPTCPClient extends TCPClient {
 
 	@Override
 	public void SendPacket(int packetnumber){
-		packetsList.get(packetnumber).SendViaDataStream(getDataOutputWriter());
+		packetsList.get(packetnumber-1).SendViaDataStream(getDataOutputWriter());
 	}
 	
 	public void GetRoutingInfo(){
@@ -33,6 +33,7 @@ public class FTPTCPClient extends TCPClient {
 			routingClient.InitializeRoutingGraph(nofnode);
 			routingClient.ReceiveInfoAndCreateGraph();
 			Path path = routingClient.GetShortestPath(0, nofnode-1);
+			System.out.println(path.m_PacketList.toString());
 			sendLineToOutput(path.m_PacketList.toString());
 			EstimateRTT = (long) path.totalweight;
 			TimeOutInterval = (long) path.totalweight * 2 + 200;
@@ -56,18 +57,8 @@ public class FTPTCPClient extends TCPClient {
 		 * */
 	}
 	@Override
-	protected boolean isTransmittingFinished(){
-		return lastACK >= transferfilesize;
-	}
-	@Override
-	protected void SchedulePacketRetransmit(){
-		EstimateRTT = TimeOutInterval;
-		ssthresh = congestionwindow >> 1;
-		congestionwindow = MaximumSegmentSize;
-		totalNumOfPacketSent = lastACK / MaximumSegmentSize;
-	}
-	@Override
 	protected void AskUserForInput(){
+		GetRoutingInfo();
 		System.out.println("Please enter the file path: ");
 		try {
 			filepath = getUserInput();
@@ -77,10 +68,11 @@ public class FTPTCPClient extends TCPClient {
 		}
 	}
 	@Override
-	protected void SendingInitialInformation(){
-		GetRoutingInfo();
+	protected void SendingInitialInformation(){	
 		try {
+			sendLineToOutput(filepath);
 			PrepareFileTransfer();
+			sendLineToOutput(Integer.toString(packetsList.size()));
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

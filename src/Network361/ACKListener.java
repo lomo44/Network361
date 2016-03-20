@@ -39,7 +39,8 @@ public class ACKListener implements Runnable {
 				if(lastack > master.getLastACK()){
 					System.out.println("Acknoledgement " +lastack +" received");
 					master.setLastACK(lastack);
-					master.setNumOfAckReceived(master.getNumOfAckReceived()+1);
+					int temp = master.getNumOfAckReceived()+1;
+					master.setNumOfAckReceived(temp);
 					if(lastack == notifyACK){
 						notifyACK = -1;
 						masterThread.interrupt();

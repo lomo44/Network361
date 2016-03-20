@@ -5,7 +5,8 @@ import java.io.InputStreamReader;
 import java.net.Socket;
 import java.net.UnknownHostException;
 
-
+// Old Client Base Class
+// TODO: Need to clear this class.
 
 public abstract class Client implements Runnable {
 	BufferedReader userinput;

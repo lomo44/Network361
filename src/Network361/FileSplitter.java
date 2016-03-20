@@ -2,11 +2,12 @@ package Network361;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 
-// This class seperate a file to an array of packet
+// This class seperate a file to an array of packets
 
 
 public class FileSplitter {
@@ -20,8 +21,16 @@ public class FileSplitter {
 	public FileSplitter(String _filename, int _segmentsize) {
 		file = new File(_filename);
 		segmentsize = _segmentsize;
+		packetshelf = new ArrayList<Packet>();
 		if(ValidateFile()){
-			SplitingFile();
+			try {
+				fileInputStream = new FileInputStream(file);
+				SplitingFile();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
 		}
 	}
 	public int getFileLength(){
@@ -35,37 +44,26 @@ public class FileSplitter {
 			return true;
 		}
 	}
-	private void SplitingFile(){
+	private void SplitingFile() throws IOException{
 		byte[] buffer = new byte[segmentsize];
 		int _SequnceNumber = 0;
 		numberofpacket = 0;
 		for(;;){
-			try {
-				int byteread = fileInputStream.read(buffer);
-				if(byteread > 0){
-					_SequnceNumber += byteread;
-					Packet newpacket = new Packet(_SequnceNumber);
-					newpacket.LoadPsacket(buffer, byteread);
-					numberofpacket++;
-					filesize += byteread;
-					packetshelf.add(newpacket);
-				}
-				else{
-					break;
-				}
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				System.out.println("Unexpected Error when spliting file");
-				e.printStackTrace();
+			int byteread = fileInputStream.read(buffer);
+			if(byteread > 0){
+				_SequnceNumber += byteread;
+				numberofpacket++;
+				Packet newpacket = new Packet(numberofpacket);
+				newpacket.LoadPsacket(buffer, byteread);
+				filesize += byteread;
+				packetshelf.add(newpacket);
+			}
+			else{
+				break;
 			}
 		}
-		System.out.println("File Successfully Splited");
-		try {
-			fileInputStream.close();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		System.out.println("File Successfully Splited" + packetshelf.size());
+		fileInputStream.close();
 	}
 	public ArrayList<Packet> CheckOutPackets(){
 		return packetshelf;

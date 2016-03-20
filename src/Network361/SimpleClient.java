@@ -17,12 +17,13 @@ public abstract class SimpleClient extends Client {
 		// TODO Auto-generated constructor stub
 	}
 	public void Connect(String hostname, int portnumber) throws UnknownHostException, IOException{
-		this.clientsocket = super.ConnectToHost(hostname, portnumber);
+		this.clientsocket = new Socket(hostname,portnumber);
 		datainputreader = new BufferedReader(new InputStreamReader(clientsocket.getInputStream()));
 		dataoutputwriter = new DataOutputStream(clientsocket.getOutputStream());
 	}
 	public void Connect(Socket _soc){
 		try {
+			clientsocket = _soc;
 			datainputreader = new BufferedReader(new InputStreamReader(_soc.getInputStream()));
 			dataoutputwriter = new DataOutputStream(clientsocket.getOutputStream());
 		} catch (IOException e) {

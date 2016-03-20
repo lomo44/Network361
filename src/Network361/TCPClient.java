@@ -7,7 +7,7 @@ import java.util.Scanner;
 
 public class TCPClient extends ARQClient {
 	protected int congestionwindow;
-	protected int ssthresh;
+	protected int ssthresh = Integer.MAX_VALUE;
 	protected int totalNumOfPacketSent;
 	private int RoundTripTimes;
 	protected long TimeOutInterval = 1200;
@@ -82,7 +82,6 @@ public class TCPClient extends ARQClient {
 		for(int i = MaximumSegmentSize; 
 				i<= congestionwindow && totalNumOfPacketSent < totalNumberOfPacket ;
 				i+= MaximumSegmentSize){
-			
 			totalNumOfPacketSent++;
 			NumOfPACSend++;
 			System.out.println("Sending Packet " + totalNumOfPacketSent);
@@ -102,7 +101,8 @@ public class TCPClient extends ARQClient {
 			Thread.sleep(TimeOutInterval);
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
-			NumOfACKReceive -= getNumOfAckReceived();
+			System.out.println("Number of ack received: "+getNumOfAckReceived());
+			NumOfACKReceive = getNumOfAckReceived() - NumOfACKReceive;
 			AdjustingTimeoutValue();
 			AdjustingCongestionWindow();
 			return;
@@ -110,7 +110,7 @@ public class TCPClient extends ARQClient {
 		System.out.println("Time out");
 		if(lastACK == totalNumOfPacketSent){
 			NumOfACKReceive -= getNumOfAckReceived();
-			AdjustingTCPConfiguration();
+			AdjustingTimeoutValue();
 			AdjustingCongestionWindow();
 		}
 		else{
